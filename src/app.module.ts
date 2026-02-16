@@ -5,6 +5,7 @@ import { PrismaModule } from './modules/tickets/infrastructure/database/prisma.m
 import { TicketsModule } from './modules/tickets/tickets.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { RabbitMQModule } from './modules/tickets/infrastructure/messaging/rabbitmq.module';
+import { RedisModule } from './modules/tickets/infrastructure/cache/redis.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { RabbitMQModule } from './modules/tickets/infrastructure/messaging/rabbi
     TicketsModule,
     ScheduleModule.forRoot(),
     RabbitMQModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],
