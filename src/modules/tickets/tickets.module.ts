@@ -7,6 +7,7 @@ import { CreateSessionUseCase } from './application/use-cases/create-session.use
 import { ExpireReservationsUseCase } from './application/use-cases/expire-reservation.use-case';
 import { ReservationExpirationJob } from './infrastructure/jobs/reservation-expiration.job';
 import { ConfirmPaymentUseCase } from './application/use-cases/confirm-payment.use-case';
+import { RabbitMqService } from './infrastructure/messaging/rabbitmq.service';
 
 @Module({
   controllers: [ReservationController, SessionController],
@@ -17,6 +18,8 @@ import { ConfirmPaymentUseCase } from './application/use-cases/confirm-payment.u
     ExpireReservationsUseCase,
     ReservationExpirationJob,
     ConfirmPaymentUseCase,
+    CreateReservationUseCase,
+    RabbitMqService,
   ],
 })
 export class TicketsModule {}

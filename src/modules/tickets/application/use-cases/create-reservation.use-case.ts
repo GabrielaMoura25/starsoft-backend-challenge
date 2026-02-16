@@ -5,10 +5,15 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 import { CreateReservationDto } from '../dto/create-reservation.dto';
+import { RabbitMqService } from '../../infrastructure/messaging/rabbitmq.service';
+import { ReservationCreatedEvent } from '../events/reservation-created.event';
 
 @Injectable()
 export class CreateReservationUseCase {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly rabbit: RabbitMqService,
+  ) {}
 
   async execute(data: CreateReservationDto) {
     return this.prisma.$transaction(async (tx) => {
@@ -43,6 +48,11 @@ export class CreateReservationUseCase {
           expiresAt,
         },
       });
+
+      await this.rabbit.publish(
+        'reservation-created',
+        new ReservationCreatedEvent(reservation.id, data.userId, data.seatId),
+      );
       return reservation;
     });
   }
