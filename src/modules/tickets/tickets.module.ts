@@ -6,6 +6,7 @@ import { SessionController } from './presentation/controllers/session.controller
 import { CreateSessionUseCase } from './application/use-cases/create-session.use-case';
 import { ExpireReservationsUseCase } from './application/use-cases/expire-reservation.use-case';
 import { ReservationExpirationJob } from './infrastructure/jobs/reservation-expiration.job';
+import { ConfirmPaymentUseCase } from './application/use-cases/confirm-payment.use-case';
 
 @Module({
   controllers: [ReservationController, SessionController],
@@ -15,6 +16,7 @@ import { ReservationExpirationJob } from './infrastructure/jobs/reservation-expi
     CreateSessionUseCase,
     ExpireReservationsUseCase,
     ReservationExpirationJob,
+    ConfirmPaymentUseCase,
   ],
 })
 export class TicketsModule {}

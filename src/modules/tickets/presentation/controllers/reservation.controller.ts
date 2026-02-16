@@ -1,11 +1,20 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { CreateReservationUseCase } from '../../application/use-cases/create-reservation.use-case';
 import { CreateReservationDto } from '../../application/dto/create-reservation.dto';
+import { ConfirmPaymentUseCase } from '../../application/use-cases/confirm-payment.use-case';
 
 @Controller('reservations')
 export class ReservationController {
   constructor(
     private readonly createReservationUseCase: CreateReservationUseCase,
+    private readonly confirmPaymentUseCase: ConfirmPaymentUseCase,
   ) {}
 
   @Post()
@@ -18,5 +27,10 @@ export class ReservationController {
       expiresAt: reservation.expiresAt,
       status: reservation.status,
     };
+  }
+
+  @Post(':id/confirm')
+  async confirm(@Param('id') id: string) {
+    return this.confirmPaymentUseCase.execute(id);
   }
 }

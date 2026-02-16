@@ -33,7 +33,7 @@ export class CreateReservationUseCase {
       });
 
       // Criar reserva temporária (30s)
-      const expiresAt = new Date(Date.now() + 30 * 1000);
+      const expiresAt = new Date(Date.now() + 60 * 1000);
 
       const reservation = await tx.reservation.create({
         data: {
