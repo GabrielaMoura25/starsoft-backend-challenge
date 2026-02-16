@@ -18,7 +18,6 @@ import { RabbitMqService } from './infrastructure/messaging/rabbitmq.service';
     ExpireReservationsUseCase,
     ReservationExpirationJob,
     ConfirmPaymentUseCase,
-    CreateReservationUseCase,
     RabbitMqService,
   ],
 })
