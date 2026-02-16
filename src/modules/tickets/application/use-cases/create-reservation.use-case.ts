@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 import { CreateReservationDto } from '../dto/create-reservation.dto';
 
@@ -15,11 +19,11 @@ export class CreateReservationUseCase {
       );
 
       if (!seat.length) {
-        throw new Error('Seat not found');
+        throw new NotFoundException('Seat not found');
       }
 
       if (seat[0].status !== 'AVAILABLE') {
-        throw new Error('Seat is not available');
+        throw new ConflictException('Seat is not available');
       }
 
       // Atualizar status do assento
@@ -29,7 +33,7 @@ export class CreateReservationUseCase {
       });
 
       // Criar reserva temporária (30s)
-      const expiresAt = new Date(Date.now() + 30 * 1000);
+      const expiresAt = new Date(Date.now() + 60 * 1000);
 
       const reservation = await tx.reservation.create({
         data: {

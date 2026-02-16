@@ -1,6 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { CreateReservationUseCase } from '../application/use-cases/create-reservation.use-case';
-import { CreateReservationDto } from '../application/dto/create-reservation.dto';
+import { CreateReservationUseCase } from '../../application/use-cases/create-reservation.use-case';
+import { CreateReservationDto } from '../../application/dto/create-reservation.dto';
 
 @Controller('reservations')
 export class ReservationController {
