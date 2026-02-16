@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Session {
+  id           String        @id @default(uuid())
+  movieTitle   String
+  room         String
+  dateTime     DateTime
+  price        Decimal
+  seats        Seat[]
+  reservations Reservation[]
+  sales        Sale[]
+  createdAt    DateTime      @default(now())
+}
+
+model Seat {
+  id           String        @id @default(uuid())
+  number       Int
+  sessionId    String
+  session      Session       @relation(fields: [sessionId], references: [id])
+  status       SeatStatus    @default(AVAILABLE)
+  reservations Reservation[]
+  sale         Sale?
+}
+
+model Reservation {
+  id        String            @id @default(uuid())
+  userId    String
+  sessionId String
+  session   Session           @relation(fields: [sessionId], references: [id])
+  seatId    String
+  seat      Seat              @relation(fields: [seatId], references: [id])
+  expiresAt DateTime
+  status    ReservationStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+
+  @@unique([seatId, status])
+}
+
+model Sale {
+  id        String   @id @default(uuid())
+  userId    String
+  sessionId String
+  session   Session  @relation(fields: [sessionId], references: [id])
+  seatId    String
+  seat      Seat     @relation(fields: [seatId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([seatId])
+}
+
+enum SeatStatus {
+  AVAILABLE
+  RESERVED
+  SOLD
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  EXPIRED
+  CANCELLED
+}
