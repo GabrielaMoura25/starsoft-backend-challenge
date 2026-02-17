@@ -12,7 +12,10 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(RedisService.name);
 
   onModuleInit() {
-    const url = process.env.REDIS_URL ?? 'redis://redis:6379';
+    const url = process.env.REDIS_URL;
+    if (!url) {
+      throw new Error('REDIS_URL environment variable is not defined');
+    }
     this.client = new Redis(url);
     this.logger.log(`Connected to Redis at ${url}`);
   }
