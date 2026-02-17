@@ -9,11 +9,12 @@ export class ExpireReservationsUseCase {
   private readonly logger = new Logger(ExpireReservationsUseCase.name);
   constructor(
     private readonly prisma: PrismaService,
-    private readonly rabbit?: RabbitMqService,
+    private readonly rabbit: RabbitMqService,
   ) {}
 
   async execute(): Promise<void> {
     const now = new Date();
+    this.logger.log(`Checking for expired reservations`);
 
     await this.prisma.$transaction(async (tx) => {
       const expiredReservations = await tx.reservation.findMany({
@@ -25,8 +26,13 @@ export class ExpireReservationsUseCase {
         },
       });
 
-      this.logger.debug(
-        `Found ${expiredReservations.length} expired reservations`,
+      if (expiredReservations.length === 0) {
+        this.logger.log(`No expired reservations found`);
+        return;
+      }
+
+      this.logger.log(
+        `Found ${expiredReservations.length} expired reservation(s)`,
       );
 
       for (const reservation of expiredReservations) {
@@ -43,7 +49,7 @@ export class ExpireReservationsUseCase {
         });
 
         try {
-          await this.rabbit?.publish(
+          await this.rabbit.publish(
             'reservation-expired',
             new ReservationExpiredEvent(
               reservation.id,
@@ -51,15 +57,15 @@ export class ExpireReservationsUseCase {
               reservation.seatId,
             ),
           );
-          this.logger.debug(
+          this.logger.log(
             `Published reservation-expired for ${reservation.id}`,
           );
 
-          await this.rabbit?.publish(
+          await this.rabbit.publish(
             'seat-released',
             new SeatReleasedEvent(reservation.seatId, reservation.sessionId),
           );
-          this.logger.debug(
+          this.logger.log(
             `Published seat-released for seat ${reservation.seatId}`,
           );
         } catch (err) {

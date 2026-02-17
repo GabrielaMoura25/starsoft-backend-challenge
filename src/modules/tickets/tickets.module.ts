@@ -4,23 +4,19 @@ import { PrismaService } from './infrastructure/database/prisma.service';
 import { CreateReservationUseCase } from './application/use-cases/create-reservation.use-case';
 import { SessionController } from './presentation/controllers/session.controller';
 import { CreateSessionUseCase } from './application/use-cases/create-session.use-case';
-import { ExpireReservationsUseCase } from './application/use-cases/expire-reservation.use-case';
-import { ReservationExpirationJob } from './infrastructure/jobs/reservation-expiration.job';
 import { ConfirmPaymentUseCase } from './application/use-cases/confirm-payment.use-case';
-import { RabbitMqService } from './infrastructure/messaging/rabbitmq.service';
 import { GetSessionSeatsUseCase } from './application/use-cases/get-session-seats.use-case';
 import { GetUserPurchasesUseCase } from './application/use-cases/get-user-purchases.use-case';
+import { RabbitMQModule } from './infrastructure/messaging/rabbitmq.module';
 
 @Module({
+  imports: [RabbitMQModule],
   controllers: [ReservationController, SessionController],
   providers: [
     PrismaService,
     CreateReservationUseCase,
     CreateSessionUseCase,
-    ExpireReservationsUseCase,
-    ReservationExpirationJob,
     ConfirmPaymentUseCase,
-    RabbitMqService,
     GetSessionSeatsUseCase,
     GetUserPurchasesUseCase,
   ],
