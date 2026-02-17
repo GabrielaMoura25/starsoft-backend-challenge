@@ -32,14 +32,21 @@ export class CreateReservationUseCase {
     try {
       return await this.prisma.$transaction(async (tx) => {
         // Buscar o assento com lock
-        const seat = await tx.$queryRawUnsafe<{ id: string; status: string }[]>(
-          `SELECT * FROM "Seat" WHERE id = $1 FOR UPDATE`,
-          data.seatId,
-        );
+        const seat = await tx.$queryRawUnsafe<
+          { id: string; status: string; sessionId: string }[]
+        >(`SELECT * FROM "Seat" WHERE id = $1 FOR UPDATE`, data.seatId);
 
         if (!seat.length) {
           this.logger.warn(`Seat not found: ${data.seatId}`);
           throw new NotFoundException('Seat not found');
+        }
+
+        // Validar se o assento pertence à sessão
+        if (seat[0].sessionId !== data.sessionId) {
+          this.logger.warn(
+            `Seat ${data.seatId} does not belong to session ${data.sessionId}. Belongs to session ${seat[0].sessionId}`,
+          );
+          throw new ConflictException('Seat does not belong to this session');
         }
 
         if (seat[0].status !== 'AVAILABLE') {
